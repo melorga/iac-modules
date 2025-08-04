@@ -4,6 +4,7 @@
 *.tfvars
 *.tfvars.json
 *.tfplan
+plan.bin
 .terraform/
 .terraform.lock.hcl
 crash.log
