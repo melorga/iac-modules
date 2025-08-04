@@ -2,9 +2,7 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
-*.tfvars.json
 *.tfplan
-plan.bin
 .terraform/
 .terraform.lock.hcl
 crash.log
@@ -45,10 +43,3 @@ __pycache__/
 # Test outputs
 test-results/
 coverage/
-.terraform-test/
-
-# Go
-vendor/
-*.so
-*.exe
-*.dll
