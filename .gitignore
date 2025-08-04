@@ -1,0 +1,53 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terragrunt
+.terragrunt-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Runtime
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+
+# Archives
+*.zip
+*.tar.gz
+
+# Test outputs
+test-results/
+coverage/
+.terraform-test/
+
+# Go
+vendor/
+*.so
+*.exe
+*.dll

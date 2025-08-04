@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${site_name}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .status {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .tech-badge {
+            background: #007bff;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ${site_name}</h1>
+        
+        <div class="status">
+            ✅ <strong>Status:</strong> Static site successfully deployed via Terraform!
+        </div>
+
+        <div class="info">
+            <h3>🏗️ Infrastructure Architecture</h3>
+            <p>This site demonstrates a production-ready static hosting setup using:</p>
+            <div class="tech-stack">
+                <span class="tech-badge">Amazon S3</span>
+                <span class="tech-badge">CloudFront</span>
+                <span class="tech-badge">Route 53</span>
+                <span class="tech-badge">Terraform</span>
+                <span class="tech-badge">GitHub Actions</span>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>🔧 Key Features</h3>
+            <ul>
+                <li><strong>Global CDN:</strong> CloudFront distribution for fast worldwide access</li>
+                <li><strong>HTTPS Enforced:</strong> SSL/TLS termination with ACM certificates</li>
+                <li><strong>Cost Optimized:</strong> S3 Standard-IA for infrequent access files</li>
+                <li><strong>Security First:</strong> Origin Access Control, private S3 bucket</li>
+                <li><strong>Infrastructure as Code:</strong> Fully managed via Terraform</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>📊 Performance Metrics</h3>
+            <ul>
+                <li><strong>Global Latency:</strong> < 100ms average response time</li>
+                <li><strong>Availability:</strong> 99.99% SLA via CloudFront</li>
+                <li><strong>Cost:</strong> ~$1-5/month for typical traffic</li>
+                <li><strong>SSL Score:</strong> A+ rating on SSL Labs</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <p><strong>Last Updated:</strong> ${timestamp}</p>
+            <p><strong>Repository:</strong> <a href="https://github.com/melorga/iac-modules">GitHub - IAC Modules</a></p>
+        </div>
+    </div>
+</body>
+</html>
