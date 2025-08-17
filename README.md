@@ -5,7 +5,7 @@ Enterprise-grade Terraform modules for AWS infrastructure, designed for producti
 ## 🏗️ Available Modules
 
 | Module | Description |
-|--------|-------------|----------------|
+|--------|-------------|
 | [s3-static-site](./modules/s3-static-site) | S3 + CloudFront static hosting |
 | [eks-cluster](./modules/eks-cluster) | Production EKS cluster setup |
 | [alb-fargate-service](./modules/alb-fargate-service) | Fargate service with ALB |
