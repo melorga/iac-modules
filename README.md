@@ -1,7 +1,5 @@
 # Infrastructure as Code Modules
 
-This repository contains Terraform modules for managing AWS infrastructure.
-
 Enterprise-grade Terraform modules for AWS infrastructure, designed for production use with comprehensive testing and documentation.
 
 ## 🏗️ Available Modules
@@ -87,8 +85,3 @@ All modules in this repository follow these standards:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🤝 Support
-
-- 📚 [Documentation](https://github.com/melorga/iac-modules/wiki)
-- 🐛 [Issues](https://github.com/melorga/iac-modules/issues)
-- 💬 [Discussions](https://github.com/melorga/iac-modules/discussions)
