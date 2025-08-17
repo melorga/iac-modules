@@ -1,8 +1,6 @@
 # Infrastructure as Code Modules
 
-[![Terraform](https://img.shields.io/badge/Terraform-1.8+-623CE4?style=for-the-badge&logo=terraform)](https://terraform.io/)
-[![AWS](https://img.shields.io/badge/AWS-Provider-FF9900?style=for-the-badge&logo=amazon-aws)](https://registry.terraform.io/providers/hashicorp/aws/latest)
-[![Tests](https://github.com/melorga/iac-modules/workflows/Tests/badge.svg)](https://github.com/melorga/iac-modules/actions)
+This repository contains Terraform modules for managing AWS infrastructure.
 
 Enterprise-grade Terraform modules for AWS infrastructure, designed for production use with comprehensive testing and documentation.
 
