@@ -8,13 +8,13 @@ Enterprise-grade Terraform modules for AWS infrastructure, designed for producti
 
 ## 🏗️ Available Modules
 
-| Module | Description | Latest Version |
+| Module | Description |
 |--------|-------------|----------------|
-| [s3-static-site](./modules/s3-static-site) | S3 + CloudFront static hosting | [![Release](https://img.shields.io/github/v/release/melorga/iac-modules?filter=s3-static-site*)](./modules/s3-static-site) |
-| [eks-cluster](./modules/eks-cluster) | Production EKS cluster setup | [![Release](https://img.shields.io/github/v/release/melorga/iac-modules?filter=eks-cluster*)](./modules/eks-cluster) |
-| [alb-fargate-service](./modules/alb-fargate-service) | Fargate service with ALB | [![Release](https://img.shields.io/github/v/release/melorga/iac-modules?filter=alb-fargate*)](./modules/alb-fargate-service) |
-| [lambda-api](./modules/lambda-api) | Serverless API with Lambda | [![Release](https://img.shields.io/github/v/release/melorga/iac-modules?filter=lambda-api*)](./modules/lambda-api) |
-| [rds-postgres](./modules/rds-postgres) | PostgreSQL RDS with encryption | [![Release](https://img.shields.io/github/v/release/melorga/iac-modules?filter=rds-postgres*)](./modules/rds-postgres) |
+| [s3-static-site](./modules/s3-static-site) | S3 + CloudFront static hosting |
+| [eks-cluster](./modules/eks-cluster) | Production EKS cluster setup |
+| [alb-fargate-service](./modules/alb-fargate-service) | Fargate service with ALB |
+| [lambda-api](./modules/lambda-api) | Serverless API with Lambda |
+| [rds-postgres](./modules/rds-postgres) | PostgreSQL RDS with encryption |
 
 ## 🚀 Quick Start
 
