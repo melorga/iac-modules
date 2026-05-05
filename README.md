@@ -1,27 +1,33 @@
-# Infrastructure as Code Modules
+# iac-modules
 
-Enterprise-grade Terraform modules for AWS infrastructure, designed for production use with comprehensive testing and documentation.
+Reusable AWS Terraform modules — currently: **S3 static site**.
 
-## 🏗️ Available Modules
+## Implemented
 
 | Module | Description |
 |--------|-------------|
-| [s3-static-site](./modules/s3-static-site) | S3 + CloudFront static hosting |
-| [eks-cluster](./modules/eks-cluster) | Production EKS cluster setup |
-| [alb-fargate-service](./modules/alb-fargate-service) | Fargate service with ALB |
-| [lambda-api](./modules/lambda-api) | Serverless API with Lambda |
-| [rds-postgres](./modules/rds-postgres) | PostgreSQL RDS with encryption |
+| [s3-static-site](./modules/s3-static-site) | Private S3 bucket fronted by CloudFront (OAC), hardened response headers, optional Route 53 aliases. |
 
-## 🚀 Quick Start
+## Roadmap (not yet implemented)
+
+These modules are planned but **not present in this repository yet**. Tracking-only:
+
+- `eks-cluster` — production EKS cluster setup
+- `alb-fargate-service` — Fargate service behind an ALB
+- `lambda-api` — serverless API with Lambda + API Gateway
+- `rds-postgres` — PostgreSQL RDS with encryption and backups
+
+If you need any of these, open an issue and it will be prioritized.
+
+## Quick Start
 
 ```hcl
-# Use modules via Git with version pinning
 module "static_site" {
   source = "git::ssh://git@github.com/melorga/iac-modules.git//modules/s3-static-site?ref=v1.0.0"
-  
+
   bucket_name = "my-awesome-website"
   domain_name = "example.com"
-  
+
   tags = {
     Project = "MyProject"
     Owner   = "MyTeam"
@@ -29,59 +35,38 @@ module "static_site" {
 }
 ```
 
-## 🔧 Development
+See [`modules/s3-static-site/README.md`](./modules/s3-static-site/README.md) for full inputs/outputs.
+
+## Development
 
 ### Prerequisites
 
-- Terraform >= 1.8
-- Go >= 1.22 (for testing)
+- Terraform >= 1.9, < 2.0
+- Go >= 1.22 (only required for the optional Terratest suite)
 - AWS CLI configured
-- tflint, tfsec, terraform-docs
+- `tflint` (CI uses v4)
 
-### Testing
+### Common targets
 
 ```bash
-# Run static analysis
-make lint
-
-# Run unit tests
-make test
-
-# Run integration tests (requires AWS credentials)
-make test-integration
-
-# Generate documentation
-make docs
+make validate          # init + validate every module and example
+make lint              # tflint + tfsec
+make test              # native `terraform test` (plan-only stubs)
+make test-integration  # Terratest — creates real AWS resources
 ```
 
-### Contributing
+## Module Standards
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the full test suite
-6. Submit a pull request
+- **Semantic Versioning** for releases
+- **Native Terraform tests** (`*.tftest.hcl`) for every module; Terratest for paid integration runs
+- **Security-first**: Trivy config scans in CI, IAM least privilege, encryption on by default, no public S3
+- **Examples**: each module ships a runnable `examples/<module>` configuration
+- **Backward compatibility** is maintained within a major version
 
-## 📋 Module Standards
+## Security
 
-All modules in this repository follow these standards:
+See [SECURITY.md](./SECURITY.md) for how to report vulnerabilities. Modules pass Trivy `config` scans in CI; results are uploaded to GitHub code scanning.
 
-- **Semantic Versioning**: All releases use semver
-- **Comprehensive Testing**: Unit and integration tests with Terratest
-- **Security First**: tfsec and checkov compliance
-- **Documentation**: Auto-generated with terraform-docs
-- **Examples**: Working examples for each module
-- **Backward Compatibility**: Maintained within major versions
+## License
 
-## 🛡️ Security
-
-- All modules pass tfsec security scanning
-- Least privilege IAM policies
-- Encryption at rest and in transit by default
-- No hardcoded credentials or sensitive data
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+MIT — see [LICENSE](LICENSE).
