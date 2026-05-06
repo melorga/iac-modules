@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 provider "aws" {
   region = "us-east-1"
 }
@@ -29,25 +19,20 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-# Upload sample files
+# Upload sample files. Etag is derived from file content (filemd5) so plans
+# only show drift when the file actually changes.
 resource "aws_s3_object" "index" {
   bucket       = module.static_site.bucket_name
   key          = "index.html"
-  content      = templatefile("${path.module}/files/index.html", {
-    site_name = "Example Static Site"
-    timestamp = timestamp()
-  })
+  source       = "${path.module}/files/index.html"
   content_type = "text/html"
-  etag         = md5(templatefile("${path.module}/files/index.html", {
-    site_name = "Example Static Site"
-    timestamp = timestamp()
-  }))
+  etag         = filemd5("${path.module}/files/index.html")
 }
 
 resource "aws_s3_object" "error" {
   bucket       = module.static_site.bucket_name
   key          = "error.html"
-  content      = file("${path.module}/files/error.html")
+  source       = "${path.module}/files/error.html"
   content_type = "text/html"
   etag         = filemd5("${path.module}/files/error.html")
 }

@@ -1,0 +1,124 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TF_VERSION: "1.15.1"
+
+jobs:
+  lint:
+    name: lint (fmt + tflint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: terraform fmt -check -recursive
+        run: terraform fmt -check -recursive
+
+      - uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: latest
+
+      - name: tflint --recursive
+        run: |
+          tflint --init
+          tflint --recursive
+
+  validate:
+    name: validate (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - modules/s3-static-site
+          - examples/s3-static-site
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: terraform init -backend=false
+        working-directory: ${{ matrix.dir }}
+        run: terraform init -backend=false
+
+      - name: terraform validate
+        working-directory: ${{ matrix.dir }}
+        run: terraform validate
+
+  security:
+    name: security (trivy config)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Trivy config scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          exit-code: "0"
+
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-config
+
+  test-native:
+    name: terraform test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Run native terraform tests
+        run: |
+          set -euo pipefail
+          shopt -s globstar nullglob
+          # Find every directory containing a *.tftest.hcl below it.
+          mapfile -t test_dirs < <(
+            for f in **/*.tftest.hcl; do
+              # Module root for `terraform test` is the parent of the `tests/`
+              # directory containing the file (or the file's own directory if
+              # it sits next to module sources).
+              d="$(dirname "$f")"
+              if [ "$(basename "$d")" = "tests" ]; then
+                d="$(dirname "$d")"
+              fi
+              echo "$d"
+            done | sort -u
+          )
+          if [ "${#test_dirs[@]}" -eq 0 ]; then
+            echo "No *.tftest.hcl files found; skipping."
+            exit 0
+          fi
+          for d in "${test_dirs[@]}"; do
+            echo "::group::terraform test ($d)"
+            terraform -chdir="$d" init -backend=false
+            terraform -chdir="$d" test
+            echo "::endgroup::"
+          done

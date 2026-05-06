@@ -4,12 +4,13 @@
 *.tfvars
 *.tfplan
 .terraform/
-.terraform.lock.hcl
 crash.log
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Note: .terraform.lock.hcl IS committed (provider version pinning).
 
 # Terragrunt
 .terragrunt-cache/
@@ -43,8 +44,3 @@ __pycache__/
 # Test outputs
 test-results/
 coverage/
-
-# Documentation
-*.md
-!README.md
-!docs/README.md

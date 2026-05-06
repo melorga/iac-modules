@@ -1,13 +1,3 @@
-terraform {
-  required_version = ">= 1.5"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 locals {
   default_tags = merge(
     var.tags,
@@ -18,12 +8,20 @@ locals {
   )
 }
 
-# S3 Bucket for website hosting
+# S3 Bucket for website hosting (private; served via CloudFront OAC)
 resource "aws_s3_bucket" "website" {
   bucket        = var.bucket_name
   force_destroy = var.force_destroy
 
   tags = local.default_tags
+}
+
+resource "aws_s3_bucket_ownership_controls" "website" {
+  bucket = aws_s3_bucket.website.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "website" {
@@ -55,23 +53,26 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "website" {
   }
 }
 
+# Block ALL public access. Object delivery happens through CloudFront OAC,
+# which is exempt from the public-access block because the bucket policy
+# grants access to a specific service principal scoped by SourceArn.
 resource "aws_s3_bucket_public_access_block" "website" {
   bucket = aws_s3_bucket.website.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 data "aws_iam_policy_document" "website_policy" {
   statement {
-    sid    = "PublicReadGetObject"
+    sid    = "AllowCloudFrontServicePrincipalReadOnly"
     effect = "Allow"
 
     principals {
-      type        = "*"
-      identifiers = ["*"]
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
     }
 
     actions = [
@@ -106,6 +107,40 @@ resource "aws_cloudfront_origin_access_control" "website" {
   signing_protocol                  = "sigv4"
 }
 
+# Security headers attached to all CloudFront responses.
+resource "aws_cloudfront_response_headers_policy" "security_headers" {
+  name    = "${var.bucket_name}-security-headers"
+  comment = "Default security headers for ${var.bucket_name}"
+
+  security_headers_config {
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+      override                   = true
+    }
+
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    content_type_options {
+      override = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+
+    content_security_policy {
+      content_security_policy = "default-src 'self'"
+      override                = true
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "website" {
   origin {
     domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
@@ -121,22 +156,18 @@ resource "aws_cloudfront_distribution" "website" {
   aliases = var.domain_aliases
 
   default_cache_behavior {
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "S3-${var.bucket_name}"
-    compress               = true
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-${var.bucket_name}"
+    compress         = true
+
     viewer_protocol_policy = "redirect-to-https"
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
-
-    min_ttl     = 0
-    default_ttl = 3600
-    max_ttl     = 86400
+    # AWS managed CachingOptimized policy
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    # AWS managed CORS-S3Origin origin request policy
+    origin_request_policy_id   = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
   }
 
   price_class = var.cloudfront_price_class
@@ -149,9 +180,9 @@ resource "aws_cloudfront_distribution" "website" {
 
   viewer_certificate {
     cloudfront_default_certificate = var.ssl_certificate_arn == null
-    acm_certificate_arn           = var.ssl_certificate_arn
-    ssl_support_method            = var.ssl_certificate_arn != null ? "sni-only" : null
-    minimum_protocol_version      = var.ssl_certificate_arn != null ? "TLSv1.2_2021" : null
+    acm_certificate_arn            = var.ssl_certificate_arn
+    ssl_support_method             = var.ssl_certificate_arn != null ? "sni-only" : null
+    minimum_protocol_version       = var.ssl_certificate_arn != null ? "TLSv1.2_2021" : null
   }
 
   tags = local.default_tags
