@@ -26,8 +26,8 @@ output "cloudfront_domain_name" {
 output "website_url" {
   description = "URL of the website"
   value = var.domain_name != null ? (
-    var.subdomain != null ? 
-    "https://${var.subdomain}.${var.domain_name}" : 
+    var.subdomain != null ?
+    "https://${var.subdomain}.${var.domain_name}" :
     "https://${var.domain_name}"
   ) : "https://${aws_cloudfront_distribution.website.domain_name}"
 }
@@ -35,8 +35,8 @@ output "website_url" {
 output "route53_record_fqdn" {
   description = "FQDN of the Route 53 record"
   value = var.domain_name != null ? (
-    var.subdomain != null ? 
-    "${var.subdomain}.${var.domain_name}" : 
+    var.subdomain != null ?
+    "${var.subdomain}.${var.domain_name}" :
     var.domain_name
   ) : null
 }
