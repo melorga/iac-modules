@@ -22,7 +22,7 @@ jobs:
     name: lint (fmt + tflint)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: hashicorp/setup-terraform@v4
         with:
@@ -50,7 +50,7 @@ jobs:
           - modules/s3-static-site
           - examples/s3-static-site
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: hashicorp/setup-terraform@v4
         with:
@@ -68,7 +68,7 @@ jobs:
     name: security (trivy config)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Trivy config scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -89,7 +89,7 @@ jobs:
     name: terraform test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: hashicorp/setup-terraform@v4
         with:
